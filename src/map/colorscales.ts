@@ -6,12 +6,27 @@
 import { ColorScale } from './plotly/plotly-scatter';
 
 type RGBColorMap = [number, [number, number, number]][];
+type RGBAColorMap = [number, [number, number, number, number]][];
 
 function rgb_to_plotly(colormap: RGBColorMap): ColorScale {
     return colormap.map((c) => {
         return [c[0], `rgb(${c[1][0]}, ${c[1][1]}, ${c[1][2]})`] as [number, string];
     });
 }
+
+function rgba_to_plotly(colormap: RGBAColorMap): ColorScale {
+    return colormap.map((c) => {
+        return [c[0], `rgba(${c[1][0]}, ${c[1][1]}, ${c[1][2]}, ${c[1][3]})`] as [number, string];
+    });
+}
+
+function rgb_to_rgba(colormap: RGBColorMap, opacity: number[]): RGBAColorMap {
+    return colormap.map((c, i) => [c[0], [c[1][0], c[1][1], c[1][2], opacity[i]]])
+  }
+
+function rgba_to_rgb(colormap: RGBAColorMap): RGBColorMap {
+    return colormap.map((c) => [c[0], [c[1][0], c[1][1], c[1][2]]])
+  }
 
 const INFERNO: RGBColorMap = [
     [0.0, [0, 0, 3]],
