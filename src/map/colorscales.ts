@@ -21,11 +21,15 @@ function rgba_to_plotly(colormap: RGBAColorMap): ColorScale {
 }
 
 function rgb_to_rgba(colormap: RGBColorMap, opacity: number[]): RGBAColorMap {
-    return colormap.map((c, i) => [c[0], [c[1][0], c[1][1], c[1][2], opacity[i]]])
+    return colormap.map((c, i) => [c[0], [c[1][0], c[1][1], c[1][2], opacity[i]]]);
   }
 
 function rgba_to_rgb(colormap: RGBAColorMap): RGBColorMap {
-    return colormap.map((c) => [c[0], [c[1][0], c[1][1], c[1][2]]])
+    return colormap.map((c) => [c[0], [c[1][0], c[1][1], c[1][2]]]);
+  }
+
+function proportional_opacity(colormap: RGBColorMap): number[] {
+    return colormap.map((c) => c[0]);
   }
 
 const INFERNO: RGBColorMap = [
@@ -94,6 +98,8 @@ const INFERNO: RGBColorMap = [
     [0.9841, [246, 250, 149]],
     [1.0, [252, 254, 164]],
 ];
+
+const INFERNO_RGBA: RGBAColorMap = rgb_to_rgba(INFERNO, proportional_opacity(INFERNO));
 
 const MAGMA: RGBColorMap = [
     [0.0, [0, 0, 3]],
@@ -706,6 +712,7 @@ interface ColorMaps {
 /** @hidden */
 export const COLOR_MAPS: ColorMaps = {
     inferno: rgb_to_plotly(INFERNO),
+    inferno_test: rgba_to_plotly(INFERNO_RGBA),
     magma: rgb_to_plotly(MAGMA),
     plasma: rgb_to_plotly(PLASMA),
     viridis: rgb_to_plotly(VIRIDIS),
