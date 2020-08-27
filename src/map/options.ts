@@ -10,7 +10,7 @@ import { optionValidator } from '../options';
 import { PositioningCallback, arrayMaxMin, getByID, makeDraggable, sendWarning } from '../utils';
 import { NumericProperties, NumericProperty } from './data';
 
-import { getColorMap, AVAILABLE_COLOR_MAPS } from './colorscales';
+import { getColorMap, COLOR_MAPS } from './colorscales';
 
 import BARS_SVG from '../static/bars.svg';
 import HTML_OPTIONS from './options.html';
@@ -105,7 +105,7 @@ export class MapOptions extends OptionsGroup {
         this.symbol.validate = optionValidator(validSymbols, 'symbol');
 
         this.palette = new HTMLOption('string', 'inferno');
-        this.palette.validate = optionValidator(AVAILABLE_COLOR_MAPS, 'palette');
+        this.palette.validate = optionValidator(Object.keys(COLOR_MAPS), 'palette');
 
         this.size = {
             factor: new HTMLOption('number', 50),
@@ -382,7 +382,7 @@ export class MapOptions extends OptionsGroup {
         // ======= color palette
         const selectPalette = getByID<HTMLSelectElement>('chsp-palette');
         selectPalette.length = 0;
-        for (const key in AVAILABLE_COLOR_MAPS) {
+        for (const key in COLOR_MAPS) {
             selectPalette.options.add(new Option(key, key));
         }
         this.palette.bind(selectPalette, 'value');

@@ -105,8 +105,6 @@ const INFERNO: RGBColorMap = [
     [1.0, [252, 254, 164]],
 ];
 
-const INFERNO_RGBA: RGBAColorMap = rgb_to_rgba(INFERNO, proportional_opacity(INFERNO));
-
 const MAGMA: RGBColorMap = [
     [0.0, [0, 0, 3]],
     [0.0159, [1, 1, 9]],
@@ -711,37 +709,31 @@ const BRG: RGBColorMap = [
 ];
 
 interface ColorMaps {
-    [key: string]: ColorScale;
+    [key: string]: RGBColorMap;
 }
 
-var COLOR_MAPS = new Map<string, RGBColorMap>();
-COLOR_MAPS.set('inferno', INFERNO);
-COLOR_MAPS.set('magma', MAGMA);
-COLOR_MAPS.set('plasma', PLASMA);
-COLOR_MAPS.set('viridis', VIRIDIS);
-COLOR_MAPS.set('cividis', CIVIDIS);
-COLOR_MAPS.set('seismic', SEISMIC);
-COLOR_MAPS.set('brg', BRG);
-COLOR_MAPS.set('twilight (periodic)', TWILIGHT);
-COLOR_MAPS.set('twilight dark (periodic)', TWILIGHT_SHIFTED);
-COLOR_MAPS.set('hsv (periodic)', HSV);
-
-export const AVAILABLE_COLOR_MAPS: string[] = [
-  'inferno', 'magma', 'plasma', 'viridis', 'cividis', 'seismic', 'brg',
-  'twilight (periodic)', 'twilight dark (periodic)', 'hsv (periodic)'
-];
+/* eslint-disable sort-keys */
+/** @hidden */
+export const COLOR_MAPS: ColorMaps = {
+    inferno: INFERNO,
+    magma: MAGMA,
+    plasma: PLASMA,
+    viridis: VIRIDIS,
+    cividis: CIVIDIS,
+    seismic: SEISMIC,
+    brg: BRG,
+    'twilight (periodic)': TWILIGHT,
+    'twilight dark (periodic)': TWILIGHT_SHIFTED,
+    'hsv (periodic)': HSV
+};
 
 export function getColorMap(colormap: string, is3D: boolean=false, opacity?: number[]): ColorScale {
-  assert(colormap in AVAILABLE_COLOR_MAPS);
-  assert(COLOR_MAPS.has(colormap));
   assert(!is3D || opacity === undefined);
 
-  const cmap = COLOR_MAPS.get(colormap);
+  const cmap = COLOR_MAPS[colormap];
   assert(cmap !== undefined);
 
-  if(is3D) {
-    return rgb_to_plotly(cmap);
-  } else {
-    return rgba_to_plotly(rgb_to_rgba(cmap, opacity));
-  }
+  if(is3D) { return rgb_to_plotly(cmap);
+  } else { return rgba_to_plotly(rgb_to_rgba(cmap, opacity)); }
+  // } else { return rgba_to_plotly(rgb_to_rgba(cmap, proportional_opacity(cmap))); }
 }
