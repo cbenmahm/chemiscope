@@ -3,7 +3,9 @@
  * @module map
  */
 
+import assert from 'assert';
 import { ColorScale } from './plotly/plotly-scatter';
+
 
 type RGBColorMap = [number, [number, number, number]][];
 type RGBAColorMap = [number, [number, number, number, number]][];
@@ -20,8 +22,12 @@ function rgba_to_plotly(colormap: RGBAColorMap): ColorScale {
     });
 }
 
-function rgb_to_rgba(colormap: RGBColorMap, opacity: number[]): RGBAColorMap {
-    return colormap.map((c, i) => [c[0], [c[1][0], c[1][1], c[1][2], opacity[i]]]);
+function rgb_to_rgba(colormap: RGBColorMap, opacity?: number[]): RGBAColorMap {
+    if (opacity !== undefined) {
+      return colormap.map((c, i) => [c[0], [c[1][0], c[1][1], c[1][2], opacity[i]]]);
+    } else {
+      return colormap.map((c) => [c[0], [c[1][0], c[1][1], c[1][2], 1.0]]);
+    }
   }
 
 function rgba_to_rgb(colormap: RGBAColorMap): RGBColorMap {
@@ -708,18 +714,34 @@ interface ColorMaps {
     [key: string]: ColorScale;
 }
 
-/* eslint-disable sort-keys */
-/** @hidden */
-export const COLOR_MAPS: ColorMaps = {
-    inferno: rgb_to_plotly(INFERNO),
-    inferno_test: rgba_to_plotly(INFERNO_RGBA),
-    magma: rgb_to_plotly(MAGMA),
-    plasma: rgb_to_plotly(PLASMA),
-    viridis: rgb_to_plotly(VIRIDIS),
-    cividis: rgb_to_plotly(CIVIDIS),
-    seismic: rgb_to_plotly(SEISMIC),
-    brg: rgb_to_plotly(BRG),
-    'twilight (periodic)': rgb_to_plotly(TWILIGHT),
-    'twilight dark (periodic)': rgb_to_plotly(TWILIGHT_SHIFTED),
-    'hsv (periodic)': rgb_to_plotly(HSV),
-};
+var COLOR_MAPS = new Map<string, RGBColorMap>();
+COLOR_MAPS.set('inferno', INFERNO);
+COLOR_MAPS.set('magma', MAGMA);
+COLOR_MAPS.set('plasma', PLASMA);
+COLOR_MAPS.set('viridis', VIRIDIS);
+COLOR_MAPS.set('cividis', CIVIDIS);
+COLOR_MAPS.set('seismic', SEISMIC);
+COLOR_MAPS.set('brg', BRG);
+COLOR_MAPS.set('twilight (periodic)', TWILIGHT);
+COLOR_MAPS.set('twilight dark (periodic)', TWILIGHT_SHIFTED);
+COLOR_MAPS.set('hsv (periodic)', HSV);
+
+export const AVAILABLE_COLOR_MAPS: string[] = [
+  'inferno', 'magma', 'plasma', 'viridis', 'cividis', 'seismic', 'brg',
+  'twilight (periodic)', 'twilight dark (periodic)', 'hsv (periodic)'
+];
+
+export function getColorMap(colormap: string, is3D: boolean=false, opacity?: number[]): ColorScale {
+  assert(colormap in AVAILABLE_COLOR_MAPS);
+  assert(COLOR_MAPS.has(colormap));
+  assert(!is3D || opacity === undefined);
+
+  const cmap = COLOR_MAPS.get(colormap);
+  assert(cmap !== undefined);
+
+  if(is3D) {
+    return rgb_to_plotly(cmap);
+  } else {
+    return rgba_to_plotly(rgb_to_rgba(cmap, opacity));
+  }
+}
